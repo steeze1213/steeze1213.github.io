@@ -21,8 +21,10 @@
     .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
     .nav-logo span { color: var(--y); }
     .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-m); text-decoration: none; transition: color 0.2s; }
+    .nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-m); text-decoration: none; transition: color 0.2s; position: relative; }
     .nav-links a:hover { color: var(--black); }
+    .nav-links a.active { color: var(--black); }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2px; background: var(--y); border-radius: 2px; }
 
     /* LAYOUT */
     section { padding: 96px 0; }
@@ -108,6 +110,27 @@
     .contact-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .contact-info p { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
     .contact-info span { font-size: 13px; color: var(--white); }
+
+    /* SCROLL FADE IN */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* GITHUB GRAPH */
+    #activity { border-bottom: 1px solid var(--border); background: var(--gray-l); }
+    .github-graph { width: 100%; border-radius: 10px; overflow: hidden; }
+    .github-graph img { width: 100%; display: block; }
+
+    /* BLOG */
+    #blog { border-bottom: 1px solid var(--border); }
+    .blog-list { display: flex; flex-direction: column; gap: 0; }
+    .blog-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; border-top: 1px solid var(--border); text-decoration: none; color: var(--black); transition: all 0.18s; }
+    .blog-item:first-child { border-top: none; }
+    .blog-item:hover { color: var(--y); }
+    .blog-item:hover .blog-arrow { color: var(--y); transform: translate(2px,-2px); }
+    .blog-title { font-size: 15px; font-weight: 400; line-height: 1.5; }
+    .blog-date { font-size: 12px; color: var(--gray-m); flex-shrink: 0; }
+    .blog-arrow { font-size: 14px; color: var(--gray-m); flex-shrink: 0; transition: all 0.18s; }
+    .blog-loading { font-size: 13px; color: var(--gray-m); padding: 24px 0; }
 
     /* FOOTER */
     footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 0; text-align: center; }
@@ -204,7 +227,7 @@
 
 <!-- ABOUT -->
 <section id="about">
-  <div class="container">
+  <div class="container reveal">
     <p class="sec-label">Background</p>
     <h2 class="sec-title">학력 & 경력</h2>
     <div class="timeline">
@@ -235,7 +258,7 @@
 
 <!-- PROJECTS -->
 <section id="projects">
-  <div class="container">
+  <div class="container reveal">
     <p class="sec-label">Work</p>
     <h2 class="sec-title">Projects</h2>
     <div class="projects-grid">
@@ -331,9 +354,31 @@
   </div>
 </section>
 
+<!-- ACTIVITY -->
+<section id="activity">
+  <div class="container reveal">
+    <p class="sec-label">Activity</p>
+    <h2 class="sec-title">GitHub 활동</h2>
+    <div class="github-graph">
+      <img src="https://github-readme-activity-graph.vercel.app/graph?username=steeze1213&custom_title=steezer%27s+GitHub+Activity+Graph&bg_color=FFFFFF&color=000000&line=626069&point=F8D847&area_color=FE428E&title_color=FFBF00&area=true&grid_color=e8e8e8" alt="GitHub Activity Graph"/>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog">
+  <div class="container reveal">
+    <p class="sec-label">Writing</p>
+    <h2 class="sec-title">최근 블로그 글</h2>
+    <div class="blog-list" id="blogList">
+      <p class="blog-loading">글을 불러오는 중...</p>
+    </div>
+  </div>
+</section>
+
 <!-- SKILLS -->
 <section id="skills">
-  <div class="container">
+  <div class="container reveal">
     <p class="sec-label">Skills</p>
     <h2 class="sec-title">기술 스택</h2>
     <div class="skills-grid">
@@ -376,7 +421,7 @@
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="container">
+  <div class="container reveal">
     <p class="sec-label">Get in touch</p>
     <h2 class="sec-title">Contact</h2>
     <div class="contact-grid">
@@ -411,6 +456,7 @@
 </footer>
 
 <script>
+  // ── 증명사진 크기
   function setPhotoSize() {
     const photo = document.querySelector('.hero-photo');
     const placeholder = document.querySelector('.hero-photo-placeholder');
@@ -420,6 +466,56 @@
   }
   window.addEventListener('load', setPhotoSize);
   setTimeout(setPhotoSize, 100);
+
+  // ── 스크롤 페이드인
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ── 네비 active 표시
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  }, { passive: true });
+
+  // ── 티스토리 RSS 불러오기
+  async function loadBlog() {
+    const list = document.getElementById('blogList');
+    try {
+      const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://steezer.tistory.com/rss'));
+      const data = await res.json();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(data.contents, 'text/xml');
+      const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
+      if (!items.length) throw new Error('no items');
+      list.innerHTML = items.map(item => {
+        const title = item.querySelector('title')?.textContent || '';
+        const link  = item.querySelector('link')?.textContent || '#';
+        const pub   = item.querySelector('pubDate')?.textContent || '';
+        const date  = pub ? new Date(pub).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }) : '';
+        return `<a class="blog-item" href="${link}" target="_blank">
+          <span class="blog-title">${title}</span>
+          <span style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+            <span class="blog-date">${date}</span>
+            <span class="blog-arrow">↗</span>
+          </span>
+        </a>`;
+      }).join('');
+    } catch {
+      list.innerHTML = '<p class="blog-loading">글을 불러오지 못했습니다. <a href="https://steezer.tistory.com" target="_blank" style="color:var(--y);">블로그 바로가기 →</a></p>';
+    }
+  }
+  loadBlog();
 </script>
 
 </body>
