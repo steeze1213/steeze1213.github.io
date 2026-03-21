@@ -359,6 +359,9 @@
   <div class="container reveal">
     <p class="sec-label">Activity</p>
     <h2 class="sec-title">GitHub 활동</h2>
+    <div class="github-graph" style="margin-bottom:16px;">
+      <img src="https://ghchart.rshah.org/FFBF00/steeze1213" alt="GitHub 잔디밭" style="width:100%;display:block;border-radius:10px;"/>
+    </div>
     <div class="github-graph">
       <img src="https://github-readme-activity-graph.vercel.app/graph?username=steeze1213&custom_title=steezer%27s+GitHub+Activity+Graph&bg_color=FFFFFF&color=000000&line=626069&point=F8D847&area_color=FE428E&title_color=FFBF00&area=true&grid_color=e8e8e8" alt="GitHub Activity Graph"/>
     </div>
@@ -403,7 +406,7 @@
         <div class="skill-tags">
           <span class="skill-tag">ROS</span><span class="skill-tag">Arduino</span>
           <span class="skill-tag">PyQt5</span><span class="skill-tag">TCP/UDP</span>
-          <span class="skill-tag">Flask</span><span class="skill-tag">Raspberry Pi</span>
+          <span class="skill-tag">Flask</span>
         </div>
       </div>
       <div class="skill-card">
@@ -492,10 +495,10 @@
   async function loadBlog() {
     const list = document.getElementById('blogList');
     try {
-      const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://steezer.tistory.com/rss'));
-      const data = await res.json();
+      const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://steezer.tistory.com/rss'));
+      const text = await res.text();
       const parser = new DOMParser();
-      const xml = parser.parseFromString(data.contents, 'text/xml');
+      const xml = parser.parseFromString(text, 'text/xml');
       const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
       if (!items.length) throw new Error('no items');
       list.innerHTML = items.map(item => {
