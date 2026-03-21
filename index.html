@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>길민준 · Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --y: #FFBF00; --y-light: #FFFDF0; --y-border: #FFE066;
+      --black: #111; --gray-d: #333; --gray-m: #666; --gray-l: #f4f4f4;
+      --white: #fff; --border: #e8e8e8; --radius: 14px; --nav: 64px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav); background: rgba(255,255,255,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; z-index: 100; }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--y); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-m); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--black); }
+
+    /* LAYOUT */
+    section { padding: 96px 0; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+    .sec-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--y); margin-bottom: 6px; }
+    .sec-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.8px; color: var(--black); margin-bottom: 40px; }
+
+    /* HERO */
+    #hero { padding-top: calc(var(--nav) + 80px); padding-bottom: 96px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; font-family: 'Syne', sans-serif; font-size: 220px; font-weight: 800; color: var(--y); opacity: 0.05; top: 20px; right: -10px; line-height: 1; pointer-events: none; user-select: none; letter-spacing: -8px; }
+    .hero-circle { position: absolute; border-radius: 50%; pointer-events: none; }
+    .hero-circle.c1 { width: 300px; height: 300px; border: 1.5px solid var(--y); opacity: 0.09; top: -60px; right: 100px; }
+    .hero-circle.c2 { width: 160px; height: 160px; background: var(--y); opacity: 0.06; top: 80px; right: 220px; }
+    .hero-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #7a5800; background: var(--y-light); border: 1px solid var(--y-border); padding: 4px 14px; border-radius: 20px; margin-bottom: 28px; }
+    #hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -2px; color: var(--black); margin-bottom: 8px; white-space: nowrap; }
+    .h1-line { position: relative; display: inline-block; }
+    .h1-line::after { content: ''; position: absolute; bottom: 6px; left: 0; right: 0; height: 8px; background: var(--y); opacity: 0.35; z-index: -1; border-radius: 2px; }
+    .hero-sub { font-size: 17px; color: var(--gray-m); font-weight: 300; max-width: 480px; margin-bottom: 32px; line-height: 1.65; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+    .badge { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); color: var(--gray-d); }
+    .badge.y { border-color: var(--y-border); background: var(--y-light); color: #7a5800; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.18s; border: none; cursor: pointer; }
+    .btn-primary { background: var(--y); color: var(--black); }
+    .btn-primary:hover { background: #e6ab00; transform: translateY(-1px); }
+    .btn-secondary { background: var(--white); color: var(--black); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--black); transform: translateY(-1px); }
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); padding-top: 40px; }
+    .stat { padding-right: 24px; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--black); letter-spacing: -1px; display: block; }
+    .stat-label { font-size: 12px; color: var(--gray-m); }
+
+    /* ABOUT */
+    #about { border-bottom: 1px solid var(--border); }
+    .timeline { display: flex; flex-direction: column; }
+    .tl-item { display: grid; grid-template-columns: 150px 1fr; gap: 24px; padding: 24px 0; border-top: 1px solid var(--border); }
+    .tl-item:first-child { border-top: none; }
+    .tl-date { font-size: 12px; color: var(--gray-m); padding-top: 3px; line-height: 1.5; }
+    .tl-content h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+    .tl-dot { display: inline-block; width: 6px; height: 6px; background: var(--y); border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+    .tl-content p { font-size: 13px; color: var(--gray-m); font-weight: 300; }
+
+    /* PROJECTS */
+    #projects { border-bottom: 1px solid var(--border); background: var(--gray-l); }
+    .projects-grid { display: grid; gap: 20px; }
+    .proj-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .proj-card:hover { border-color: var(--y); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.07); }
+    .proj-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .proj-banner { width: 100%; height: 8px; background: var(--y); }
+    .proj-body { padding: 24px 28px 28px; }
+    .proj-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .proj-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--black); letter-spacing: -0.3px; }
+    .proj-arrow { font-size: 16px; color: var(--gray-m); flex-shrink: 0; transition: all 0.2s; }
+    .proj-card:hover .proj-arrow { color: var(--y); transform: translate(2px,-2px); }
+    .proj-desc { font-size: 13px; color: var(--gray-m); font-weight: 300; margin-bottom: 16px; line-height: 1.65; }
+    .proj-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .proj-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; background: var(--y-light); border: 1px solid var(--y-border); border-radius: 4px; color: #7a5800; }
+    .proj-badge-green { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+    .proj-badge-blue { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; }
+    .proj-stat { font-size: 12px; color: var(--gray-m); font-weight: 400; }
+
+    /* R2 이미지 플레이스홀더 */
+    .proj-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; }
+    .proj-placeholder span:first-child { font-size: 40px; }
+    .proj-placeholder span:last-child { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
+
+    /* SKILLS */
+    #skills { border-bottom: 1px solid var(--border); }
+    .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .skill-card { background: var(--gray-l); border-radius: 10px; padding: 20px 22px; }
+    .skill-cat { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-m); margin-bottom: 12px; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .skill-tag { font-size: 12px; font-weight: 500; padding: 4px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 6px; color: var(--gray-d); }
+
+    /* CONTACT */
+    #contact { background: var(--black); }
+    #contact .sec-label { color: var(--y); }
+    #contact .sec-title { color: var(--white); }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .contact-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; text-decoration: none; color: var(--white); transition: all 0.2s; }
+    .contact-card:hover { background: rgba(255,191,0,0.12); border-color: var(--y); transform: translateY(-2px); }
+    .contact-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .contact-info p { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
+    .contact-info span { font-size: 13px; color: var(--white); }
+
+    /* FOOTER */
+    footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 0; text-align: center; }
+    footer p { font-size: 12px; color: rgba(255,255,255,0.3); }
+    footer span { color: var(--y); }
+
+    /* ANIM */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .fu { opacity: 0; animation: fadeUp 0.65s ease forwards; }
+    .fu:nth-child(1) { animation-delay: 0.05s; }
+    .fu:nth-child(2) { animation-delay: 0.15s; }
+    .fu:nth-child(3) { animation-delay: 0.25s; }
+    .fu:nth-child(4) { animation-delay: 0.35s; }
+    .fu:nth-child(5) { animation-delay: 0.45s; }
+    .fu:nth-child(6) { animation-delay: 0.55s; }
+
+    /* HERO 2열 레이아웃 */
+    .hero-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 48px; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-photo-wrap { flex-shrink: 0; display: flex; align-items: flex-start; padding-top: 4px; }
+    .hero-photo {
+      width: auto;
+      border-radius: 8px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--border);
+    }
+    .hero-photo-placeholder {
+      border-radius: 8px;
+      background: var(--gray-l);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-m); font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      .hero-inner { flex-direction: column-reverse; gap: 24px; }
+      .hero-photo-wrap { width: 100%; justify-content: center; }
+    }
+      nav { padding: 0 20px; }
+      .container { padding: 0 20px; }
+      .hero-stats { grid-template-columns: repeat(2,1fr); gap: 20px; }
+      .tl-item { grid-template-columns: 1fr; gap: 4px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .hero-bg { font-size: 130px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">steezer<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg">AI</div>
+  <div class="hero-circle c1"></div>
+  <div class="hero-circle c2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-tag fu">AI · 자율주행 · 로보틱스</div>
+        <h1 class="fu" id="hero-h1">길민준</h1>
+        <p class="hero-sub fu">AI 모델 개발부터 로봇 시스템 구현까지 경험한 신입 개발자입니다.</p>
+        <div class="hero-badges fu">
+          <span class="badge y">AI / ML</span>
+          <span class="badge y">자율주행</span>
+          <span class="badge y">로보틱스</span>
+          <span class="badge">Python</span>
+          <span class="badge">PyTorch</span>
+          <span class="badge">ROS</span>
+          <span class="badge">Arduino</span>
+        </div>
+        <div class="hero-btns fu">
+          <a href="#projects" class="btn btn-primary">프로젝트 보기 →</a>
+          <a href="#contact" class="btn btn-secondary">연락하기</a>
+        </div>
+      </div>
+      <div class="hero-photo-wrap">
+        <img class="hero-photo" src="./images/PF.jpg" alt="길민준 프로필"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="hero-photo-placeholder" style="display:none;">사진</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <p class="sec-label">Background</p>
+    <h2 class="sec-title">학력 & 경력</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-date">2026.03 – 2026.07<br>(수료 예정)</span>
+        <div class="tl-content">
+          <h3><span class="tl-dot"></span>융합_로보테크 AI 자율주행로봇 개발자 과정 2기</h3>
+          <p>미래융합교육원 · Arduino, TCP/UDP, Flask, ROS, PyQt5, MySQL</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2024</span>
+        <div class="tl-content">
+          <h3><span class="tl-dot"></span>ABC 데이터 탐험가 부트캠프 3기</h3>
+          <p>유클리드소프트 · 미니 프로젝트 대회 1위 수상</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2022.03 – 2026.02</span>
+        <div class="tl-content">
+          <h3><span class="tl-dot"></span>동국대학교 WISE캠퍼스 컴퓨터공학과</h3>
+          <p>학사 졸업</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <p class="sec-label">Work</p>
+    <h2 class="sec-title">Projects</h2>
+    <div class="projects-grid">
+
+      <!-- R2: 사진 있는 카드 -->
+      <a class="proj-card" href="https://github.com/steeze1213/R2" target="_blank">
+        <img class="proj-img" src="./images/R2.jpg" alt="R2 자율주행 보조모듈"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="proj-placeholder" style="display:none">
+          <span>🤖</span><span>이미지 준비 중</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3 class="proj-title">R2 · 로보테크 AI 자율주행로봇 개발자 과정</h3>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <p class="proj-desc">Arduino 기반 자율주행 보조모듈 제작. TCP/UDP 통신, Flask 서버, ROS 기반 팀/개인 프로젝트 모음. 실제 하드웨어와 소프트웨어를 연동한 임베디드 시스템.</p>
+          <div class="proj-meta">
+            <div class="proj-tags">
+              <span class="proj-tag">Python</span><span class="proj-tag">C++</span>
+              <span class="proj-tag">Arduino</span><span class="proj-tag">ROS</span>
+              <span class="proj-tag">PyQt5</span><span class="proj-tag">MySQL</span>
+            </div>
+            <span class="proj-badge-green">진행 중</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- NEWS -->
+      <a class="proj-card" href="https://github.com/steeze1213/NEWS" target="_blank">
+        <img class="proj-img" src="./images/NEWS.jpg" alt="NEWS 가짜뉴스 탐지"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="proj-placeholder" style="display:none"><span>📰</span><span>이미지 준비 중</span></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3 class="proj-title">NEWS · 멀티모달 AI 가짜뉴스 탐지</h3>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <p class="proj-desc">텍스트(TF-IDF + LinearSVC)와 이미지(EfficientNet-B2)를 엔트로피 기반으로 융합한 뉴스 신뢰도 스크리닝 시스템.</p>
+          <div class="proj-meta">
+            <div class="proj-tags">
+              <span class="proj-tag">Python</span><span class="proj-tag">scikit-learn</span>
+              <span class="proj-tag">PyTorch</span><span class="proj-tag">EfficientNet-B2</span>
+            </div>
+            <span class="proj-stat">Acc 86.45% · F1 0.8571</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- HARU FILM -->
+      <a class="proj-card" href="https://plum-viburnum-08b.notion.site/ICT-CJons-8d86787e060e4d778a5dff0104956797" target="_blank">
+        <img class="proj-img" src="./images/HARU.jpg" alt="HARU FILM 감정일기"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="proj-placeholder" style="display:none"><span>🎞️</span><span>이미지 준비 중</span></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3 class="proj-title">HARU FILM · AI 감정일기 서비스</h3>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <p class="proj-desc">일기 텍스트의 감정을 분류(Klue-BERT, 정확도 0.713)하고 Kakao Brain Karlo API로 개인화 이미지를 생성하는 감정일기 서비스. 기획 및 감성 데이터 라벨링 담당.</p>
+          <div class="proj-meta">
+            <div class="proj-tags">
+              <span class="proj-tag">Python</span><span class="proj-tag">KoBERT</span>
+              <span class="proj-tag">Klue-BERT</span><span class="proj-tag">Papago API</span>
+            </div>
+            <span class="proj-stat">정확도 0.713</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ABC -->
+      <a class="proj-card" href="https://github.com/steeze1213/ABC" target="_blank">
+        <img class="proj-img" src="./images/ABC.jpg" alt="ABC 데이터 부트캠프"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="proj-placeholder" style="display:none"><span>📊</span><span>이미지 준비 중</span></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3 class="proj-title">ABC · 데이터 탐험가 부트캠프</h3>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <p class="proj-desc">서울 쏠림 현상 분석으로 미니 프로젝트 대회 1위. 고립 청년 멘토 매칭 서비스 기획.</p>
+          <div class="proj-meta">
+            <div class="proj-tags">
+              <span class="proj-tag">Python</span><span class="proj-tag">Selenium</span>
+              <span class="proj-tag">KoNLPy</span><span class="proj-tag">Plotly</span>
+            </div>
+            <span class="proj-badge-blue">🏆 대회 1위</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <p class="sec-label">Skills</p>
+    <h2 class="sec-title">기술 스택</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <p class="skill-cat">Languages</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">C</span>
+          <span class="skill-tag">C++</span><span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">HTML/CSS</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <p class="skill-cat">AI / ML / Data</p>
+        <div class="skill-tags">
+          <span class="skill-tag">PyTorch</span><span class="skill-tag">TensorFlow</span>
+          <span class="skill-tag">scikit-learn</span><span class="skill-tag">NumPy</span>
+          <span class="skill-tag">Pandas</span><span class="skill-tag">Matplotlib</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <p class="skill-cat">Robotics / Embedded</p>
+        <div class="skill-tags">
+          <span class="skill-tag">ROS</span><span class="skill-tag">Arduino</span>
+          <span class="skill-tag">PyQt5</span><span class="skill-tag">TCP/UDP</span>
+          <span class="skill-tag">Flask</span><span class="skill-tag">Raspberry Pi</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <p class="skill-cat">Tools & DB</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Git</span><span class="skill-tag">GitHub</span>
+          <span class="skill-tag">MySQL</span><span class="skill-tag">Linux</span>
+          <span class="skill-tag">Ubuntu</span><span class="skill-tag">VS Code</span>
+          <span class="skill-tag">Jupyter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <p class="sec-label">Get in touch</p>
+    <h2 class="sec-title">Contact</h2>
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:steeze1213@naver.com">
+        <div class="contact-icon">✉️</div>
+        <div class="contact-info"><p>Email</p><span>steeze1213@naver.com</span></div>
+      </a>
+      <a class="contact-card" href="https://github.com/steeze1213" target="_blank">
+        <div class="contact-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        </div>
+        <div class="contact-info"><p>GitHub</p><span>steeze1213</span></div>
+      </a>
+      <a class="contact-card" href="https://steezer.tistory.com" target="_blank">
+        <div class="contact-icon">📝</div>
+        <div class="contact-info"><p>Tech Blog</p><span>steezer.tistory.com</span></div>
+      </a>
+      <a class="contact-card" href="https://blog.naver.com/steeze1213" target="_blank">
+        <div class="contact-icon">📰</div>
+        <div class="contact-info"><p>Naver Blog</p><span>steeze1213</span></div>
+      </a>
+      <a class="contact-card" href="https://plum-viburnum-08b.notion.site/ICT-CJons-8d86787e060e4d778a5dff0104956797" target="_blank">
+        <div class="contact-icon">📋</div>
+        <div class="contact-info"><p>Notion Portfolio</p><span>바로가기 →</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Minjun Gil <span>·</span> steezer</p>
+</footer>
+
+<script>
+  function setPhotoSize() {
+    const h1 = document.querySelector('#hero-h1');
+    const photo = document.querySelector('.hero-photo');
+    const placeholder = document.querySelector('.hero-photo-placeholder');
+    if (!h1) return;
+    const h = h1.offsetHeight;
+    const w = Math.round(h * 3 / 4);
+    [photo, placeholder].forEach(el => {
+      if (el) { el.style.height = h + 'px'; el.style.width = w + 'px'; }
+    });
+  }
+  window.addEventListener('load', setPhotoSize);
+  window.addEventListener('resize', setPhotoSize);
+</script>
+
+</body>
+</html>
