@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -8,23 +8,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
       --y: #FFBF00; --y-light: #FFFDF0; --y-border: #FFE066;
       --black: #111; --gray-d: #333; --gray-m: #666; --gray-l: #f4f4f4;
       --white: #fff; --border: #e8e8e8; --radius: 14px; --nav: 64px;
+      --bg: #fff; --card-bg: #fff; --nav-bg: rgba(255,255,255,0.94);
     }
+    [data-theme="dark"] {
+      --black: #f0f0f0; --gray-d: #ccc; --gray-m: #888; --gray-l: #1e1e1e;
+      --white: #141414; --border: #2a2a2a; --bg: #141414; --card-bg: #1e1e1e;
+      --nav-bg: rgba(20,20,20,0.94); --y-light: #2a2200; --y-border: #4a3800;
+    }
+
     html { scroll-behavior: smooth; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--black); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s; }
 
     /* NAV */
-    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav); background: rgba(255,255,255,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; z-index: 100; }
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav); background: var(--nav-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; z-index: 100; }
     .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
     .nav-logo span { color: var(--y); }
+    .nav-right { display: flex; align-items: center; gap: 32px; }
     .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-m); text-decoration: none; transition: color 0.2s; position: relative; }
     .nav-links a:hover { color: var(--black); }
     .nav-links a.active { color: var(--black); }
     .nav-links a.active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2px; background: var(--y); border-radius: 2px; }
+
+    /* 다크모드 토글 */
+    .theme-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 14px; cursor: pointer; color: var(--gray-m); transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--y); color: var(--black); }
+
+    /* 상단 버튼 */
+    #topBtn { position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px; background: var(--y); border: none; border-radius: 50%; font-size: 18px; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.15); transition: all 0.2s; z-index: 99; }
+    #topBtn:hover { transform: translateY(-2px); background: #e6ab00; }
+    #topBtn.show { display: flex; }
 
     /* LAYOUT */
     section { padding: 96px 0; }
@@ -39,23 +57,22 @@
     .hero-circle.c1 { width: 300px; height: 300px; border: 1.5px solid var(--y); opacity: 0.09; top: -60px; right: 100px; }
     .hero-circle.c2 { width: 160px; height: 160px; background: var(--y); opacity: 0.06; top: 80px; right: 220px; }
     .hero-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #7a5800; background: var(--y-light); border: 1px solid var(--y-border); padding: 4px 14px; border-radius: 20px; margin-bottom: 28px; }
+    .hero-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 48px; }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-photo-wrap { flex-shrink: 0; padding-top: 4px; }
+    .hero-photo { width: 150px; height: 200px; border-radius: 8px; object-fit: cover; display: block; border: 1px solid var(--border); background: var(--gray-l); }
+    .hero-photo-placeholder { width: 150px; height: 200px; border-radius: 8px; background: var(--gray-l); border: 1px solid var(--border); display: none; align-items: center; justify-content: center; color: var(--gray-m); font-size: 13px; }
     #hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -2px; color: var(--black); margin-bottom: 8px; white-space: nowrap; }
-    .h1-line { position: relative; display: inline-block; }
-    .h1-line::after { content: ''; position: absolute; bottom: 6px; left: 0; right: 0; height: 8px; background: var(--y); opacity: 0.35; z-index: -1; border-radius: 2px; }
     .hero-sub { font-size: 17px; color: var(--gray-m); font-weight: 300; max-width: 480px; margin-bottom: 32px; line-height: 1.65; }
     .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
-    .badge { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); color: var(--gray-d); }
+    .badge { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); color: var(--gray-d); background: var(--card-bg); }
     .badge.y { border-color: var(--y-border); background: var(--y-light); color: #7a5800; }
-    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.18s; border: none; cursor: pointer; }
-    .btn-primary { background: var(--y); color: var(--black); }
+    .btn-primary { background: var(--y); color: #111; }
     .btn-primary:hover { background: #e6ab00; transform: translateY(-1px); }
-    .btn-secondary { background: var(--white); color: var(--black); border: 1px solid var(--border); }
+    .btn-secondary { background: var(--card-bg); color: var(--black); border: 1px solid var(--border); }
     .btn-secondary:hover { border-color: var(--black); transform: translateY(-1px); }
-    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); padding-top: 40px; }
-    .stat { padding-right: 24px; }
-    .stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--black); letter-spacing: -1px; display: block; }
-    .stat-label { font-size: 12px; color: var(--gray-m); }
 
     /* ABOUT */
     #about { border-bottom: 1px solid var(--border); }
@@ -70,16 +87,22 @@
     /* PROJECTS */
     #projects { border-bottom: 1px solid var(--border); background: var(--gray-l); }
     .projects-grid { display: grid; gap: 20px; }
-    .proj-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
-    .proj-card:hover { border-color: var(--y); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.07); }
+    .proj-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .proj-card:hover { border-color: var(--y); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
     .proj-img { width: 100%; height: 200px; object-fit: cover; display: block; }
-    .proj-banner { width: 100%; height: 8px; background: var(--y); }
+    .proj-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; }
+    .proj-placeholder span:first-child { font-size: 40px; }
+    .proj-placeholder span:last-child { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
     .proj-body { padding: 24px 28px 28px; }
-    .proj-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .proj-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
     .proj-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--black); letter-spacing: -0.3px; }
     .proj-arrow { font-size: 16px; color: var(--gray-m); flex-shrink: 0; transition: all 0.2s; }
     .proj-card:hover .proj-arrow { color: var(--y); transform: translate(2px,-2px); }
-    .proj-desc { font-size: 13px; color: var(--gray-m); font-weight: 300; margin-bottom: 16px; line-height: 1.65; }
+    .proj-info { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .proj-info-tag { font-size: 11px; color: var(--gray-m); font-weight: 400; }
+    .proj-info-tag span { color: var(--y); font-weight: 600; }
+    .proj-desc { font-size: 13px; color: var(--gray-m); font-weight: 300; margin-bottom: 12px; line-height: 1.65; }
+    .proj-role { font-size: 12px; color: var(--gray-m); margin-bottom: 14px; line-height: 1.6; border-left: 2px solid var(--y); padding-left: 10px; }
     .proj-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .proj-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; background: var(--y-light); border: 1px solid var(--y-border); border-radius: 4px; color: #7a5800; }
@@ -87,42 +110,13 @@
     .proj-badge-blue { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; }
     .proj-stat { font-size: 12px; color: var(--gray-m); font-weight: 400; }
 
-    /* R2 이미지 플레이스홀더 */
-    .proj-placeholder { width: 100%; height: 200px; background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; }
-    .proj-placeholder span:first-child { font-size: 40px; }
-    .proj-placeholder span:last-child { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
-
-    /* SKILLS */
-    #skills { border-bottom: 1px solid var(--border); }
-    .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .skill-card { background: var(--gray-l); border-radius: 10px; padding: 20px 22px; }
-    .skill-cat { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-m); margin-bottom: 12px; }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
-    .skill-tag { font-size: 12px; font-weight: 500; padding: 4px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 6px; color: var(--gray-d); }
-
-    /* CONTACT */
-    #contact { background: var(--black); }
-    #contact .sec-label { color: var(--y); }
-    #contact .sec-title { color: var(--white); }
-    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-    .contact-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; text-decoration: none; color: var(--white); transition: all 0.2s; }
-    .contact-card:hover { background: rgba(255,191,0,0.12); border-color: var(--y); transform: translateY(-2px); }
-    .contact-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .contact-info p { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
-    .contact-info span { font-size: 13px; color: var(--white); }
-
-    /* SCROLL FADE IN */
-    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* GITHUB GRAPH */
+    /* ACTIVITY */
     #activity { border-bottom: 1px solid var(--border); background: var(--gray-l); }
-    .github-graph { width: 100%; border-radius: 10px; overflow: hidden; }
-    .github-graph img { width: 100%; display: block; }
+    .github-graph img { width: 100%; display: block; border-radius: 10px; border: 1px solid var(--border); }
 
     /* BLOG */
     #blog { border-bottom: 1px solid var(--border); }
-    .blog-list { display: flex; flex-direction: column; gap: 0; }
+    .blog-list { display: flex; flex-direction: column; }
     .blog-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; border-top: 1px solid var(--border); text-decoration: none; color: var(--black); transition: all 0.18s; }
     .blog-item:first-child { border-top: none; }
     .blog-item:hover { color: var(--y); }
@@ -132,12 +126,35 @@
     .blog-arrow { font-size: 14px; color: var(--gray-m); flex-shrink: 0; transition: all 0.18s; }
     .blog-loading { font-size: 13px; color: var(--gray-m); padding: 24px 0; }
 
+    /* SKILLS */
+    #skills { border-bottom: 1px solid var(--border); }
+    .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .skill-card { background: var(--gray-l); border-radius: 10px; padding: 20px 22px; }
+    .skill-cat { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-m); margin-bottom: 12px; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .skill-tag { font-size: 12px; font-weight: 500; padding: 4px 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--gray-d); }
+
+    /* CONTACT */
+    #contact { background: #111; }
+    #contact .sec-label { color: var(--y); }
+    #contact .sec-title { color: #f0f0f0; }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .contact-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; text-decoration: none; color: #f0f0f0; transition: all 0.2s; }
+    .contact-card:hover { background: rgba(255,191,0,0.12); border-color: var(--y); transform: translateY(-2px); }
+    .contact-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .contact-info p { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
+    .contact-info span { font-size: 13px; color: #f0f0f0; }
+
     /* FOOTER */
-    footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 0; text-align: center; }
+    footer { background: #111; border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 0; text-align: center; }
     footer p { font-size: 12px; color: rgba(255,255,255,0.3); }
     footer span { color: var(--y); }
 
-    /* ANIM */
+    /* SCROLL FADE IN */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* HERO ANIM */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
     .fu { opacity: 0; animation: fadeUp 0.65s ease forwards; }
     .fu:nth-child(1) { animation-delay: 0.05s; }
@@ -145,37 +162,17 @@
     .fu:nth-child(3) { animation-delay: 0.25s; }
     .fu:nth-child(4) { animation-delay: 0.35s; }
     .fu:nth-child(5) { animation-delay: 0.45s; }
-    .fu:nth-child(6) { animation-delay: 0.55s; }
 
-    /* HERO 2열 레이아웃 */
-    .hero-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 48px; }
-    .hero-text { flex: 1; min-width: 0; }
-    .hero-photo-wrap { flex-shrink: 0; display: flex; align-items: flex-start; padding-top: 4px; }
-    .hero-photo {
-      width: auto;
-      border-radius: 8px;
-      object-fit: cover;
-      display: block;
-      border: 1px solid var(--border);
-      background: var(--gray-l);
-    }
-    .hero-photo-placeholder {
-      border-radius: 8px;
-      background: var(--gray-l);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--gray-m); font-size: 13px;
-    }
+    /* RESPONSIVE */
     @media (max-width: 640px) {
-      .hero-inner { flex-direction: column-reverse; gap: 24px; }
-      .hero-photo-wrap { width: 100%; justify-content: center; }
-    }
       nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
       .container { padding: 0 20px; }
-      .hero-stats { grid-template-columns: repeat(2,1fr); gap: 20px; }
       .tl-item { grid-template-columns: 1fr; gap: 4px; }
       .skills-grid { grid-template-columns: 1fr; }
       .hero-bg { font-size: 130px; }
+      .hero-inner { flex-direction: column-reverse; gap: 24px; }
+      .hero-photo-wrap { width: 100%; display: flex; justify-content: center; }
     }
   </style>
 </head>
@@ -183,12 +180,16 @@
 
 <nav>
   <a class="nav-logo" href="#hero">steezer<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#activity">Activity</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="theme-btn" id="themeBtn" aria-label="다크모드 토글">🌙</button>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -219,7 +220,7 @@
       <div class="hero-photo-wrap">
         <img class="hero-photo" src="./images/PF.jpg" alt="길민준 프로필"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="hero-photo-placeholder" style="display:none;">사진</div>
+        <div class="hero-photo-placeholder">사진</div>
       </div>
     </div>
   </div>
@@ -239,7 +240,7 @@
         </div>
       </div>
       <div class="tl-item">
-        <span class="tl-date">2024</span>
+        <span class="tl-date">2024.06 - 2024.08</span>
         <div class="tl-content">
           <h3><span class="tl-dot"></span>ABC 데이터 탐험가 부트캠프 3기</h3>
           <p>유클리드소프트 · 미니 프로젝트 대회 1위 수상</p>
@@ -263,19 +264,22 @@
     <h2 class="sec-title">Projects</h2>
     <div class="projects-grid">
 
-      <!-- R2: 사진 있는 카드 -->
+      <!-- R2 -->
       <a class="proj-card" href="https://github.com/steeze1213/R2" target="_blank">
-        <img class="proj-img" src="./images/R2.jpg" alt="R2 자율주행 보조모듈"
+        <img class="proj-img" src="./images/R2.jpg" alt="R2"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="proj-placeholder" style="display:none">
-          <span>🤖</span><span>이미지 준비 중</span>
-        </div>
+        <div class="proj-placeholder" style="display:none"><span>🤖</span><span>이미지 준비 중</span></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3 class="proj-title">R2 · 로보테크 AI 자율주행로봇 개발자 과정</h3>
             <span class="proj-arrow">↗</span>
           </div>
-          <p class="proj-desc">Arduino 기반 자율주행 보조모듈 제작. TCP/UDP 통신, Flask 서버, ROS 기반 팀/개인 프로젝트 모음. 실제 하드웨어와 소프트웨어를 연동한 임베디드 시스템.</p>
+          <div class="proj-info">
+            <span class="proj-info-tag"><span>기간</span> 2026.03 – 2026.07</span>
+            <span class="proj-info-tag"><span>유형</span> 개인 + 팀</span>
+          </div>
+          <p class="proj-desc">Arduino, TCP/UDP, Flask, ROS 기반 팀/개인 프로젝트 모음 (진행 중).</p>
+          <p class="proj-role">탑뷰 미로 게임 · 교통사고 분석 GUI · TCP 마피아 게임 서버/클라이언트 · ROS 로봇 관제 UI · 재고관리 DB · Arduino+UDP 자율주행 보조안전모듈 (발표회)</p>
           <div class="proj-meta">
             <div class="proj-tags">
               <span class="proj-tag">Python</span><span class="proj-tag">C++</span>
@@ -289,7 +293,7 @@
 
       <!-- NEWS -->
       <a class="proj-card" href="https://github.com/steeze1213/NEWS" target="_blank">
-        <img class="proj-img" src="./images/NEWS.jpg" alt="NEWS 가짜뉴스 탐지"
+        <img class="proj-img" src="./images/NEWS.jpg" alt="NEWS"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="proj-placeholder" style="display:none"><span>📰</span><span>이미지 준비 중</span></div>
         <div class="proj-body">
@@ -297,11 +301,16 @@
             <h3 class="proj-title">NEWS · 멀티모달 AI 가짜뉴스 탐지</h3>
             <span class="proj-arrow">↗</span>
           </div>
+          <div class="proj-info">
+            <span class="proj-info-tag"><span>기간</span> 2025.03 – 2025.11</span>
+            <span class="proj-info-tag"><span>유형</span> 개인 (졸업논문)</span>
+          </div>
           <p class="proj-desc">텍스트(TF-IDF + LinearSVC)와 이미지(EfficientNet-B2)를 엔트로피 기반으로 융합한 뉴스 신뢰도 스크리닝 시스템.</p>
+          <p class="proj-role">텍스트 분류 모델 설계 및 학습 · 이미지 분류 모델 학습 · 엔트로피 기반 융합 알고리즘 설계 · 전체 파이프라인 구현</p>
           <div class="proj-meta">
             <div class="proj-tags">
               <span class="proj-tag">Python</span><span class="proj-tag">scikit-learn</span>
-              <span class="proj-tag">PyTorch</span><span class="proj-tag">EfficientNet-B2</span>
+              <span class="proj-tag">PyTorch</span>
             </div>
             <span class="proj-stat">Acc 86.45% · F1 0.8571</span>
           </div>
@@ -310,7 +319,7 @@
 
       <!-- HARU FILM -->
       <a class="proj-card" href="https://plum-viburnum-08b.notion.site/ICT-CJons-8d86787e060e4d778a5dff0104956797" target="_blank">
-        <img class="proj-img" src="./images/HARU.jpg" alt="HARU FILM 감정일기"
+        <img class="proj-img" src="./images/HARU.jpg" alt="HARU FILM"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="proj-placeholder" style="display:none"><span>🎞️</span><span>이미지 준비 중</span></div>
         <div class="proj-body">
@@ -318,7 +327,12 @@
             <h3 class="proj-title">HARU FILM · AI 감정일기 서비스</h3>
             <span class="proj-arrow">↗</span>
           </div>
-          <p class="proj-desc">일기 텍스트의 감정을 분류(Klue-BERT, 정확도 0.713)하고 Kakao Brain Karlo API로 개인화 이미지를 생성하는 감정일기 서비스. 기획 및 감성 데이터 라벨링 담당.</p>
+          <div class="proj-info">
+            <span class="proj-info-tag"><span>기간</span> 2023.07 – 2023.08</span>
+            <span class="proj-info-tag"><span>유형</span> 팀 (ICT 공모전)</span>
+          </div>
+          <p class="proj-desc">일기 텍스트의 감정을 분류(Klue-BERT, 정확도 0.713)하고 Kakao Brain Karlo API로 개인화 이미지를 생성하는 감정일기 서비스.</p>
+          <p class="proj-role">기획 담당 · 감성 데이터 라벨링</p>
           <div class="proj-meta">
             <div class="proj-tags">
               <span class="proj-tag">Python</span><span class="proj-tag">KoBERT</span>
@@ -331,7 +345,7 @@
 
       <!-- ABC -->
       <a class="proj-card" href="https://github.com/steeze1213/ABC" target="_blank">
-        <img class="proj-img" src="./images/ABC.jpg" alt="ABC 데이터 부트캠프"
+        <img class="proj-img" src="./images/ABC.jpg" alt="ABC"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="proj-placeholder" style="display:none"><span>📊</span><span>이미지 준비 중</span></div>
         <div class="proj-body">
@@ -339,7 +353,12 @@
             <h3 class="proj-title">ABC · 데이터 탐험가 부트캠프</h3>
             <span class="proj-arrow">↗</span>
           </div>
-          <p class="proj-desc">서울 쏠림 현상 분석으로 미니 프로젝트 대회 1위. 고립 청년 멘토 매칭 서비스 기획.</p>
+          <div class="proj-info">
+            <span class="proj-info-tag"><span>기간</span> 2024.06 – 2024.08</span>
+            <span class="proj-info-tag"><span>유형</span> 개인 + 팀</span>
+          </div>
+          <p class="proj-desc">서울 쏠림 현상 분석 (미니 프로젝트 대회 1위), 고립 청년 멘토 매칭 서비스 기획.</p>
+          <p class="proj-role">서울 쏠림 현상 데이터 수집 및 분석 · KoNLPy 텍스트 분석 · Plotly 시각화 · 팀 프로젝트 기획 파트 담당</p>
           <div class="proj-meta">
             <div class="proj-tags">
               <span class="proj-tag">Python</span><span class="proj-tag">Selenium</span>
@@ -360,7 +379,7 @@
     <p class="sec-label">Activity</p>
     <h2 class="sec-title">GitHub 활동</h2>
     <div class="github-graph">
-      <img src="https://ghchart.rshah.org/FFBF00/steeze1213" alt="GitHub 잔디밭" style="width:100%;display:block;border-radius:10px;"/>
+      <img src="https://ghchart.rshah.org/FFBF00/steeze1213" alt="GitHub 잔디밭"/>
     </div>
   </div>
 </section>
@@ -455,49 +474,58 @@
   <p>© 2026 Minjun Gil <span>·</span> steezer</p>
 </footer>
 
+<!-- 상단으로 버튼 -->
+<button id="topBtn" aria-label="상단으로">↑</button>
+
 <script>
-  // ── 증명사진 크기
-  function setPhotoSize() {
-    const photo = document.querySelector('.hero-photo');
-    const placeholder = document.querySelector('.hero-photo-placeholder');
-    [photo, placeholder].forEach(el => {
-      if (el) { el.style.height = '200px'; el.style.width = '150px'; }
-    });
-  }
-  window.addEventListener('load', setPhotoSize);
-  setTimeout(setPhotoSize, 100);
+  // ── 다크모드
+  const btn = document.getElementById('themeBtn');
+  const html = document.documentElement;
+  const saved = localStorage.getItem('theme') || 'light';
+  html.setAttribute('data-theme', saved);
+  btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+  btn.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    btn.textContent = next === 'dark' ? '☀️' : '🌙';
+  });
+
+  // ── 상단으로 버튼
+  const topBtn = document.getElementById('topBtn');
+  window.addEventListener('scroll', () => {
+    topBtn.classList.toggle('show', window.scrollY > 400);
+  }, { passive: true });
+  topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   // ── 스크롤 페이드인
-  const revealEls = document.querySelectorAll('.reveal');
+  const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => observer.observe(el));
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
 
-  // ── 네비 active 표시
+  // ── 네비 active
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
   window.addEventListener('scroll', () => {
     let current = '';
-    sections.forEach(sec => {
-      if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
-    });
+    sections.forEach(sec => { if (window.scrollY >= sec.offsetTop - 100) current = sec.id; });
     navLinks.forEach(a => {
       a.classList.remove('active');
       if (a.getAttribute('href') === '#' + current) a.classList.add('active');
     });
   }, { passive: true });
 
-  // ── 티스토리 RSS 불러오기
+  // ── 티스토리 RSS
   async function loadBlog() {
     const list = document.getElementById('blogList');
     try {
       const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://steezer.tistory.com/rss'));
       const text = await res.text();
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(text, 'text/xml');
+      const xml = new DOMParser().parseFromString(text, 'text/xml');
       const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
-      if (!items.length) throw new Error('no items');
+      if (!items.length) throw new Error();
       list.innerHTML = items.map(item => {
         const title = item.querySelector('title')?.textContent || '';
         const link  = item.querySelector('link')?.textContent || '#';
@@ -517,6 +545,5 @@
   }
   loadBlog();
 </script>
-
 </body>
 </html>
