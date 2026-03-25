@@ -114,16 +114,19 @@
     #activity { border-bottom: 1px solid var(--border); background: var(--gray-l); }
     .github-graph img { width: 100%; display: block; border-radius: 10px; border: 1px solid var(--border); }
 
-    /* BLOG */
+    /* BLOG - 이미지 포함 (수정됨) */
     #blog { border-bottom: 1px solid var(--border); }
     .blog-list { display: flex; flex-direction: column; }
-    .blog-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; border-top: 1px solid var(--border); text-decoration: none; color: var(--black); transition: all 0.18s; }
+    .blog-item { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid var(--border); text-decoration: none; color: var(--black); transition: all 0.18s; }
     .blog-item:first-child { border-top: none; }
     .blog-item:hover { color: var(--y); }
     .blog-item:hover .blog-arrow { color: var(--y); transform: translate(2px,-2px); }
-    .blog-title { font-size: 15px; font-weight: 400; line-height: 1.5; }
-    .blog-date { font-size: 12px; color: var(--gray-m); flex-shrink: 0; }
-    .blog-arrow { font-size: 14px; color: var(--gray-m); flex-shrink: 0; transition: all 0.18s; }
+    .blog-thumb { width: 80px; height: 60px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--gray-l); border: 1px solid var(--border); }
+    .blog-content { flex: 1; min-width: 0; }
+    .blog-title { font-size: 15px; font-weight: 400; line-height: 1.5; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .blog-date { font-size: 12px; color: var(--gray-m); display: block; margin-top: 4px; }
+    .blog-right { display: flex; align-items: center; flex-shrink: 0; }
+    .blog-arrow { font-size: 14px; color: var(--gray-m); transition: all 0.18s; }
     .blog-loading { font-size: 13px; color: var(--gray-m); padding: 24px 0; }
 
     /* SKILLS */
@@ -478,7 +481,6 @@
   <p>© 2026 Minjun Gil <span>·</span> steezer</p>
 </footer>
 
-<!-- 상단으로 버튼 -->
 <button id="topBtn" aria-label="상단으로">↑</button>
 
 <script>
@@ -521,9 +523,10 @@
     });
   }, { passive: true });
 
-  // ── 티스토리 RSS
+  // ── 티스토리 RSS (이미지 포함)
   async function loadBlog() {
     const list = document.getElementById('blogList');
+    const FALLBACK = './images/MOON_ASCII.jpg';
     try {
       const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://steezer.tistory.com/rss'));
       const text = await res.text();
@@ -535,16 +538,37 @@
         const link  = item.querySelector('link')?.textContent || '#';
         const pub   = item.querySelector('pubDate')?.textContent || '';
         const date  = pub ? new Date(pub).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }) : '';
+
+        // 대표 이미지 추출: enclosure > media:content > description 내 img 순
+        let imgSrc = '';
+        const enclosure = item.querySelector('enclosure');
+        if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
+          imgSrc = enclosure.getAttribute('url') || '';
+        }
+        if (!imgSrc) {
+          const media = item.getElementsByTagNameNS('*', 'content')[0];
+          if (media) imgSrc = media.getAttribute('url') || '';
+        }
+        if (!imgSrc) {
+          const desc = item.querySelector('description')?.textContent || '';
+          const match = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
+          if (match) imgSrc = match[1];
+        }
+
         return `<a class="blog-item" href="${link}" target="_blank">
-          <span class="blog-title">${title}</span>
-          <span style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+          <img class="blog-thumb" src="${imgSrc || FALLBACK}" alt=""
+            onerror="this.src='${FALLBACK}'">
+          <div class="blog-content">
+            <span class="blog-title">${title}</span>
             <span class="blog-date">${date}</span>
+          </div>
+          <div class="blog-right">
             <span class="blog-arrow">↗</span>
-          </span>
+          </div>
         </a>`;
       }).join('');
     } catch {
-      list.innerHTML = '<p class="blog-loading">글을 불러오지 못했습니다. <a href="https://steezer.tistory.com" target="_blank" style="color:var(--y);">블로그 바로가기 →</a></p>';
+      list.innerHTML = `<p class="blog-loading">글을 불러오지 못했습니다. <a href="https://steezer.tistory.com" target="_blank" style="color:var(--y);">블로그 바로가기 →</a></p>`;
     }
   }
   loadBlog();
