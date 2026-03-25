@@ -539,7 +539,7 @@
         const pub   = item.querySelector('pubDate')?.textContent || '';
         const date  = pub ? new Date(pub).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }) : '';
 
-        // 대표 이미지 추출: enclosure > media:content > description 내 img 순
+        // 대표 이미지 추출: enclosure > media:content > description 내 data-url / src 순
         let imgSrc = '';
         const enclosure = item.querySelector('enclosure');
         if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
@@ -550,13 +550,23 @@
           if (media) imgSrc = media.getAttribute('url') || '';
         }
         if (!imgSrc) {
-          const desc = item.querySelector('description')?.textContent || '';
-          const match = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
-          if (match) imgSrc = match[1];
+          // RSS description은 HTML 엔티티로 인코딩되어 있으므로 디코딩 후 파싱
+          const raw = item.querySelector('description')?.textContent || '';
+          const tmp = document.createElement('div');
+          tmp.innerHTML = raw;
+          const decoded = tmp.innerHTML;
+          const dataUrlMatch = decoded.match(/data-url=["']([^"']+)["']/i);
+          if (dataUrlMatch) {
+            imgSrc = dataUrlMatch[1];
+          } else {
+            const srcMatch = decoded.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (srcMatch) imgSrc = srcMatch[1];
+          }
         }
 
+        const thumbSrc = (imgSrc || '').trim() || FALLBACK;
         return `<a class="blog-item" href="${link}" target="_blank">
-          <img class="blog-thumb" src="${imgSrc || FALLBACK}" alt=""
+          <img class="blog-thumb" src="${thumbSrc}" alt=""
             onerror="this.src='${FALLBACK}'">
           <div class="blog-content">
             <span class="blog-title">${title}</span>
