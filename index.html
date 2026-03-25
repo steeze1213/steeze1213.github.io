@@ -28,7 +28,7 @@
     nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav); background: var(--nav-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; z-index: 100; }
     .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--black); text-decoration: none; letter-spacing: -0.5px; }
     .nav-logo span { color: var(--y); }
-    .nav-right { display: flex; align-items: center; gap: 32px; }
+    .nav-right { display: flex; align-items: center; gap: 32px; margin-left: 40px; }
     .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-m); text-decoration: none; transition: color 0.2s; position: relative; }
     .nav-links a:hover { color: var(--black); }
@@ -166,6 +166,9 @@
     .fu:nth-child(4) { animation-delay: 0.35s; }
     .fu:nth-child(5) { animation-delay: 0.45s; }
 
+    /* PC에서 햄버거 숨기기 */
+    .hamburger { display: none; }
+
     /* RESPONSIVE */
     @media (max-width: 640px) {
       nav { padding: 0 20px; }
@@ -192,9 +195,6 @@
       .mobile-menu a:hover { color: var(--black); }
       .mobile-menu .mobile-theme-btn { background: none; border: none; font-size: 15px; color: var(--gray-m); text-align: left; padding: 10px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
     }
-
-    /* PC에서 햄버거 숨기기 */
-    .hamburger { display: none; }
   </style>
 </head>
 <body>
