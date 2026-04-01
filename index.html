@@ -858,7 +858,13 @@
     setTimeout(function tick() {
       typingEl.textContent = FULL_TEXT.slice(0, i + 1);
       i++;
-      if (i < FULL_TEXT.length) setTimeout(tick, TYPING_SPEED);
+      if (i < FULL_TEXT.length) {
+        setTimeout(tick, TYPING_SPEED);
+      } else {
+        // 타이핑 완료 → 커서 제거
+        const cursor = document.getElementById('hero-cursor');
+        if (cursor) cursor.style.display = 'none';
+      }
     }, TYPING_DELAY);
   })();
 </script>
