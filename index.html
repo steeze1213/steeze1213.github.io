@@ -535,9 +535,9 @@
     <p class="sec-label">Get in touch</p>
     <h2 class="sec-title">Contact</h2>
     <div class="contact-grid">
-      <a class="contact-card" href="/cdn-cgi/l/email-protection#493a3d2c2c332c787b787a0927283f2c3b672a2624">
+      <a class="contact-card" id="email-card" href="#">
         <div class="contact-icon">✉️</div>
-        <div class="contact-info"><p>Email</p><span><span class="__cf_email__" data-cfemail="1261667777687723202321527c736477603c717d7f">[email&#160;protected]</span></span></div>
+        <div class="contact-info"><p>Email</p><span id="email-text"></span></div>
       </a>
       <a class="contact-card" href="https://github.com/steeze1213" target="_blank">
         <div class="contact-icon">
@@ -569,7 +569,16 @@
 
 <!-- ── 기존 스크립트 (변경 없음) ── -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // 다크모드
+  // 이메일 (Cloudflare 난독화 우회 — JS 런타임 조립)
+  (function() {
+    const u = 'steeze1213';
+    const d = 'naver.com';
+    const email = u + '\u0040' + d;
+    const card = document.getElementById('email-card');
+    const text = document.getElementById('email-text');
+    if (card) card.href = 'mailto:' + email;
+    if (text) text.textContent = email;
+  })();
   const btn = document.getElementById('themeBtn');
   const mobileThemeBtn = document.getElementById('mobileThemeBtn');
   const html = document.documentElement;
