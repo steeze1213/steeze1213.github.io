@@ -535,9 +535,9 @@
     <p class="sec-label">Get in touch</p>
     <h2 class="sec-title">Contact</h2>
     <div class="contact-grid">
-      <a class="contact-card" href="mailto:steeze1213@naver.com">
+      <a class="contact-card" href="/cdn-cgi/l/email-protection#493a3d2c2c332c787b787a0927283f2c3b672a2624">
         <div class="contact-icon">✉️</div>
-        <div class="contact-info"><p>Email</p><span>steeze1213@naver.com</span></div>
+        <div class="contact-info"><p>Email</p><span><span class="__cf_email__" data-cfemail="1261667777687723202321527c736477603c717d7f">[email&#160;protected]</span></span></div>
       </a>
       <a class="contact-card" href="https://github.com/steeze1213" target="_blank">
         <div class="contact-icon">
@@ -568,7 +568,7 @@
 <button id="topBtn" aria-label="상단으로">↑</button>
 
 <!-- ── 기존 스크립트 (변경 없음) ── -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // 다크모드
   const btn = document.getElementById('themeBtn');
   const mobileThemeBtn = document.getElementById('mobileThemeBtn');
@@ -691,60 +691,50 @@
   const canvas = document.getElementById('hero-particle-canvas');
   const ctx    = canvas.getContext('2d');
 
-  // 다크모드 감지
-  function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
-
-  // 파티클 색: #FFBF00, 불투명도 0.18 (너무 진하지 않게)
   const PARTICLE_COLOR = '#FFBF00';
   const BASE_ALPHA     = 0.18;
-
-  // 물리 상수
-  const REPEL_RADIUS  = 100;   // 마우스 반발 범위 (px)
-  const REPEL_FORCE   = 6;     // 반발 세기
-  const SPRING        = 0.06;  // 원위치 복귀 스프링 강도
-  const DAMPING       = 0.78;  // 감쇠 (1에 가까울수록 오래 진동)
-  const PARTICLE_SIZE = 2.2;   // 점 크기 (px)
-  const SAMPLE_STEP   = 5;     // 픽셀 샘플링 간격 (작을수록 파티클 많아짐)
+  const REPEL_RADIUS   = 100;
+  const REPEL_FORCE    = 6;
+  const SPRING         = 0.06;
+  const DAMPING        = 0.78;
+  const PARTICLE_SIZE  = 2.2;
 
   let particles = [];
   let mouse     = { x: -9999, y: -9999 };
   let raf       = null;
-  let heroRect  = null;
 
-  // ── 파티클 생성: 오프스크린 canvas에 "AI" 그려서 픽셀 추출
+  function isMobile() { return window.innerWidth <= 640; }
+
+  // ── 파티클 생성
   function buildParticles() {
     const section = document.getElementById('hero');
-    heroRect = section.getBoundingClientRect();
+    const W = section.offsetWidth;
+    const H = section.offsetHeight;
 
-    const W = canvas.width  = heroRect.width;
-    const H = canvas.height = heroRect.height;
+    canvas.width  = W;
+    canvas.height = H;
 
-    // 오프스크린에 AI 텍스트 렌더
-    const off    = document.createElement('canvas');
-    const fontSize = Math.min(W * 0.38, 220); // 화면 너비에 비례
-    off.width    = W;
-    off.height   = H;
-    const offCtx = off.getContext('2d');
-    offCtx.font  = `800 ${fontSize}px Syne, sans-serif`;
-    offCtx.fillStyle = '#fff';
-    offCtx.letterSpacing = '-8px';
-    // 우측 상단 기준으로 위치
+    // 모바일은 파티클 수 줄이기 위해 샘플 간격 넓힘
+    const SAMPLE_STEP = isMobile() ? 8 : 5;
+
+    const off      = document.createElement('canvas');
+    const fontSize = Math.min(W * 0.38, 220);
+    off.width      = W;
+    off.height     = H;
+    const offCtx   = off.getContext('2d');
+    offCtx.font    = `800 ${fontSize}px Syne, sans-serif`;
+    offCtx.fillStyle    = '#fff';
     offCtx.textAlign    = 'right';
     offCtx.textBaseline = 'top';
     offCtx.fillText('AI', W + 10, 20);
 
-    // 픽셀 데이터에서 밝은 픽셀 좌표 추출
     const data = offCtx.getImageData(0, 0, W, H).data;
     particles  = [];
     for (let y = 0; y < H; y += SAMPLE_STEP) {
       for (let x = 0; x < W; x += SAMPLE_STEP) {
         const idx = (y * W + x) * 4;
-        if (data[idx + 3] > 128) {   // 알파값이 충분한 픽셀만
-          particles.push({
-            ox: x, oy: y,   // 원래 위치
-            x:  x, y:  y,   // 현재 위치
-            vx: 0, vy: 0,   // 속도
-          });
+        if (data[idx + 3] > 128) {
+          particles.push({ ox: x, oy: y, x, y, vx: 0, vy: 0 });
         }
       }
     }
@@ -754,11 +744,12 @@
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 마우스 좌표를 canvas 기준으로 변환
-    const mx = mouse.x - heroRect.left;
-    const my = mouse.y - heroRect.top;
+    // canvas 기준 마우스 좌표
+    const rect = canvas.getBoundingClientRect();
+    const mx   = mouse.x - rect.left;
+    const my   = mouse.y - rect.top;
 
-    ctx.fillStyle = PARTICLE_COLOR;
+    ctx.fillStyle   = PARTICLE_COLOR;
     ctx.globalAlpha = BASE_ALPHA;
 
     for (let i = 0; i < particles.length; i++) {
@@ -767,21 +758,16 @@
       const dy = p.y - my;
       const d  = Math.sqrt(dx * dx + dy * dy);
 
-      // 마우스 반발
-      if (d < REPEL_RADIUS) {
+      if (d < REPEL_RADIUS && d > 0) {
         const force = (REPEL_RADIUS - d) / REPEL_RADIUS;
         p.vx += (dx / d) * force * REPEL_FORCE;
         p.vy += (dy / d) * force * REPEL_FORCE;
       }
 
-      // 스프링 복귀
       p.vx += (p.ox - p.x) * SPRING;
       p.vy += (p.oy - p.y) * SPRING;
-
-      // 감쇠
       p.vx *= DAMPING;
       p.vy *= DAMPING;
-
       p.x  += p.vx;
       p.y  += p.vy;
 
@@ -794,42 +780,54 @@
     raf = requestAnimationFrame(animate);
   }
 
-  // ── 마우스 추적 (section 전체 기준)
-  document.getElementById('hero').addEventListener('mousemove', function(e) {
+  // ── 마우스 이벤트
+  const heroEl = document.getElementById('hero');
+  heroEl.addEventListener('mousemove', function(e) {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
-  document.getElementById('hero').addEventListener('mouseleave', function() {
-    mouse.x = -9999;
-    mouse.y = -9999;
+  heroEl.addEventListener('mouseleave', function() {
+    mouse.x = -9999; mouse.y = -9999;
   });
 
-  // ── 리사이즈 대응
+  // ── 터치 이벤트 (모바일)
+  heroEl.addEventListener('touchmove', function(e) {
+    const t = e.touches[0];
+    mouse.x = t.clientX;
+    mouse.y = t.clientY;
+  }, { passive: true });
+  heroEl.addEventListener('touchend', function() {
+    mouse.x = -9999; mouse.y = -9999;
+  });
+
+  // ── 리사이즈
   let resizeTimer;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-      heroRect = document.getElementById('hero').getBoundingClientRect();
-      buildParticles();
-    }, 200);
+    resizeTimer = setTimeout(buildParticles, 200);
   });
 
-  // ── 다크모드 전환 시 heroRect 갱신
-  document.getElementById('themeBtn').addEventListener('click', function() {
-    setTimeout(function() {
-      heroRect = document.getElementById('hero').getBoundingClientRect();
-    }, 350);
-  });
-
-  // ── 폰트 로드 후 파티클 생성 (Syne 폰트가 없으면 모양이 달라짐)
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function() {
-      buildParticles();
-      animate();
+  // ── 다크모드 버튼들
+  ['themeBtn', 'mobileThemeBtn'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', function() {
+      setTimeout(buildParticles, 350);
     });
+  });
+
+  // ── 시작: 폰트 로드 완료 후 + 추가 딜레이로 레이아웃 확정 후 실행
+  function start() {
+    setTimeout(function() {
+      buildParticles();
+      if (raf) cancelAnimationFrame(raf);
+      animate();
+    }, 100);
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(start);
   } else {
-    // 폰트 API 미지원 시 약간 딜레이 후 실행
-    setTimeout(function() { buildParticles(); animate(); }, 500);
+    setTimeout(start, 600);
   }
 })();
 </script>
@@ -877,11 +875,3 @@
   try {
     const subFont     = getComputedStyle(subEl).font;
     const subMaxW     = subEl.getBoundingClientRect().width || 560;
-    const preparedSub = prepare(SUB_TEXT, subFont);
-    const subLayout   = layout(preparedSub, subMaxW, 1.65);
-    document.documentElement.style.setProperty('--hero-sub-height', subLayout.height + 'px');
-  } catch(e) {}
-</script>
-
-</body>
-</html>
