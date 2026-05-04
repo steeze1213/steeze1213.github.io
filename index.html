@@ -657,56 +657,19 @@
     const list = document.getElementById('blogList');
     const FALLBACK = './images/MOON_ASCII.jpg';
     try {
-      const RSS_URL = 'https://steezer.tistory.com/rss';
-      const PROXIES = [
-        'https://corsproxy.io/?' + encodeURIComponent(RSS_URL),
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL),
-        'https://cors-anywhere.herokuapp.com/' + RSS_URL,
-      ];
-      let text = '';
-      for (const proxy of PROXIES) {
-        try {
-          const r = await fetch(proxy);
-          if (r.ok) { text = await r.text(); break; }
-        } catch {}
-      }
-      if (!text) throw new Error();
-      const xml = new DOMParser().parseFromString(text, 'text/xml');
-      const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
+      const res = await fetch('./rss.json');
+      const items = await res.json();
       if (!items.length) throw new Error();
       list.innerHTML = items.map(item => {
-        const title = item.querySelector('title')?.textContent || '';
-        const link  = item.querySelector('link')?.textContent || '#';
-        const pub   = item.querySelector('pubDate')?.textContent || '';
-        const date  = pub ? new Date(pub).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }) : '';
-        let imgSrc = '';
-        const enclosure = item.querySelector('enclosure');
-        if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
-          imgSrc = enclosure.getAttribute('url') || '';
-        }
-        if (!imgSrc) {
-          const media = item.getElementsByTagNameNS('*', 'content')[0];
-          if (media) imgSrc = media.getAttribute('url') || '';
-        }
-        if (!imgSrc) {
-          const raw = item.querySelector('description')?.textContent || '';
-          const tmp = document.createElement('div');
-          tmp.innerHTML = raw;
-          const decoded = tmp.innerHTML;
-          const dataUrlMatch = decoded.match(/data-url=["']([^"']+)["']/i);
-          if (dataUrlMatch) {
-            imgSrc = dataUrlMatch[1];
-          } else {
-            const srcMatch = decoded.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (srcMatch) imgSrc = srcMatch[1];
-          }
-        }
-        const thumbSrc = (imgSrc || '').trim() || FALLBACK;
-        return `<a class="blog-item" href="${link}" target="_blank">
+        const date = item.pub
+          ? new Date(item.pub).toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' })
+          : '';
+        const thumbSrc = (item.img || '').trim() || FALLBACK;
+        return `<a class="blog-item" href="${item.link}" target="_blank">
           <img class="blog-thumb" src="${thumbSrc}" alt=""
             onerror="this.src='${FALLBACK}'">
           <div class="blog-content">
-            <span class="blog-title">${title}</span>
+            <span class="blog-title">${item.title}</span>
             <span class="blog-date">${date}</span>
           </div>
           <div class="blog-right">
