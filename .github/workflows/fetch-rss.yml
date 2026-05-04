@@ -1,0 +1,55 @@
+name: Fetch Tistory RSS
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 자정(UTC) 실행
+  workflow_dispatch:       # 수동 실행 가능
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch RSS and save as JSON
+        run: |
+          python3 << 'EOF'
+          import urllib.request
+          import xml.etree.ElementTree as ET
+          import json, re
+
+          url = 'https://steezer.tistory.com/rss'
+          with urllib.request.urlopen(url) as r:
+              xml_data = r.read().decode('utf-8')
+
+          root = ET.fromstring(xml_data)
+          items = []
+          for item in root.findall('./channel/item')[:5]:
+              title = item.findtext('title') or ''
+              link  = item.findtext('link') or '#'
+              pub   = item.findtext('pubDate') or ''
+              desc  = item.findtext('description') or ''
+
+              img = ''
+              m = re.search(r'data-url=["\']([^"\']+)["\']', desc)
+              if m:
+                  img = m.group(1)
+              else:
+                  m = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', desc)
+                  if m:
+                      img = m.group(1)
+
+              items.append({'title': title, 'link': link, 'pub': pub, 'img': img})
+
+          with open('rss.json', 'w', encoding='utf-8') as f:
+              json.dump(items, f, ensure_ascii=False, indent=2)
+          print(f"Saved {len(items)} items")
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add rss.json
+          git diff --cached --quiet || git commit -m "chore: update rss.json"
+          git push
