@@ -657,8 +657,20 @@
     const list = document.getElementById('blogList');
     const FALLBACK = './images/MOON_ASCII.jpg';
     try {
-      const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://steezer.tistory.com/rss'));
-      const text = await res.text();
+      const RSS_URL = 'https://steezer.tistory.com/rss';
+      const PROXIES = [
+        'https://corsproxy.io/?' + encodeURIComponent(RSS_URL),
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL),
+        'https://cors-anywhere.herokuapp.com/' + RSS_URL,
+      ];
+      let text = '';
+      for (const proxy of PROXIES) {
+        try {
+          const r = await fetch(proxy);
+          if (r.ok) { text = await r.text(); break; }
+        } catch {}
+      }
+      if (!text) throw new Error();
       const xml = new DOMParser().parseFromString(text, 'text/xml');
       const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
       if (!items.length) throw new Error();
